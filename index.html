@@ -6,14 +6,14 @@
 </head>
 <body>
   <h2>Sistema de Desigualdades Lineales</h2>
-  <p>Graficando:</p>
+  <p>Ejemplo:</p>
   <ul>
     <li>x + y ≤ 7</li>
     <li>x - y ≥ 1</li>
     <li>x ≥ 0</li>
   </ul>
 
-  <div id="grafico" style="width:100%; max-width:700px; height:500px;"></div>
+  <div id="grafico" style="width:100%; max-width:800px; height:600px;"></div>
 
   <script>
     const x = [];
@@ -22,11 +22,12 @@
 
     for (let i = 0; i <= 10; i += 0.1) {
       x.push(i);
-      y1.push(7 - i);     // de x + y ≤ 7 → y ≤ 7 - x
-      y2.push(i - 1);     // de x - y ≥ 1 → y ≤ x - 1
+      y1.push(7 - i);    // x + y ≤ 7 → y ≤ 7 - x
+      y2.push(i - 1);    // x - y ≥ 1 → y ≤ x - 1
     }
 
-    const yMin = y1.map((y, i) => Math.min(y, y2[i]));
+    // Región factible: menor entre y1 y y2
+    const yMin = y1.map((val, i) => Math.min(val, y2[i]));
 
     const trazo1 = {
       x: x,
@@ -44,11 +45,19 @@
       line: { color: "red" }
     };
 
+    const trazo3 = {
+      x: [0, 0],
+      y: [-5, 10],
+      mode: "lines",
+      name: "x = 0",
+      line: { color: "purple", dash: "dot" }
+    };
+
     const region = {
       x: [...x, ...x.reverse()],
-      y: [...yMin, ...Array(x.length).fill(-10)],
+      y: [...yMin, ...Array(x.length).fill(0)],
       fill: "toself",
-      fillcolor: "rgba(0, 255, 0, 0.2)",
+      fillcolor: "rgba(0,255,0,0.3)",
       line: { color: "transparent" },
       name: "Región solución",
       type: "scatter"
@@ -56,12 +65,12 @@
 
     const layout = {
       title: "Sistema: x + y ≤ 7 ; x - y ≥ 1 ; x ≥ 0",
-      xaxis: { range: [0, 10], title: "x" },
-      yaxis: { range: [-5, 10], title: "y" },
+      xaxis: { title: "x", range: [-1, 10] },
+      yaxis: { title: "y", range: [-5, 10] },
       showlegend: true
     };
 
-    Plotly.newPlot("grafico", [region, trazo1, trazo2], layout);
+    Plotly.newPlot("grafico", [region, trazo1, trazo2, trazo3], layout);
   </script>
 </body>
 </html>
