@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Graficador de Inecuaciones</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 20px; }
+    #grafico { width: 90%; height: 600px; margin: auto; }
+    input, button { padding: 8px; margin: 5px; width: 80%; max-width: 500px; }
+  </style>
+</head>
+<body>
+  <h2>Graficador de Sistemas de Inecuaciones</h2>
+  <p>Escribe tus inecuaciones (por ejemplo: <code>y &lt; 2*x + 3</code>)</p>
+
+  <input type="text" id="inecuacion1" placeholder="Inecuación 1 (ej: y <= 2*x + 3)">
+  <br>
+  <input type="text" id="inecuacion2" placeholder="Inecuación 2 (opcional)">
+  <br>
+  <input type="text" id="inecuacion3" placeholder="Inecuación 3 (opcional)">
+  <br>
+  <button onclick="graficar()">Graficar Región Factible</button>
+
+  <div id="grafico"></div>
+
+  <script>
+    function evaluar(region, x, y) {
+      const scope = { x, y };
+      try {
+        return math.evaluate(region, scope);
+      } catch {
+        return false;
+      }
+    }
+
+    function graficar() {
+      const ineqs = [
+        document.getElementById('inecuacion1').value,
+        document.getElementById('inecuacion2').value,
+        document.getElementById('inecuacion3').value
+      ].filter(e => e.trim() !== "");
+
+      const x_vals = math.range(-10, 10, 0.2).toArray();
+      const y_vals = math.range(-10, 10, 0.2).toArray();
+
+      const z = y_vals.map(y =>
+        x_vals.map(x => ineqs.every(ineq => evaluar(ineq, x, y)) ? 1 : 0)
+      );
+
+      const data = [{
+        x: x_vals,
+        y: y_vals,
+        z: z,
+        type: 'contour',
+        colorscale: [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,150,200,0.4)']],
+        contours: { coloring: 'heatmap', showlabels: false }
+      }];
+
+      Plotly.newPlot('grafico', data, {
+        title: 'Región Factible',
+        xaxis: { title: 'x', range: [-10, 10] },
+        yaxis: { title: 'y', range: [-10, 10] }
+      });
+    }
+  </script>
+</body>
+</html>
